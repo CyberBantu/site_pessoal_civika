@@ -70,9 +70,7 @@
 
         /* Container principal */
         .container {
-            max-width: 800px;
-            margin: 2rem auto;
-            padding: 0 1rem;
+            max-width: 100%;
         }
 
         /* Cards de postagem */
@@ -116,6 +114,7 @@
             }
         }
     </style>
+    {% block extra_head %}{% endblock %}  <!-- Bloco para CSS/JS específicos -->
 </head>
 <body>
     <!-- Navbar -->
@@ -142,10 +141,10 @@
                     </li>
                 {% endif %}
                     <li class="nav-item">
-                        <a href="/projeto/" class="nav-link">Projetos</a>
+                        <a href="{% url 'lista_projetos' %}" class="nav-link">Projetos</a>
                     </li>
                     <li class="nav-item">
-                        <a href="/blog/" class="nav-link">Blog</a>
+                        <a href="{% url 'lista_posts' %}" class="nav-link">Blog</a> 
                     </li>
             </ul>
         </div>
@@ -154,6 +153,7 @@
     <!-- Conteúdo principal -->
     <div class="container">
         {% block content %}
+        <!-- O conteúdo específico de cada página será inserido aqui -->
         {% endblock %}
     </div>
 </body>

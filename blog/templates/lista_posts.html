@@ -1,21 +1,307 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
-<h1>Últimos Posts</h1>
-<a href="{% url 'criar_post' %}" class="btn btn-primary mb-3">Criar Novo Post</a>
-{% for post in posts %}
-    <div class="card mb-3">
-        <div class="card-body">
-            <h2 class="card-title">
-                <a href="{% url 'detalhe_post' post.slug %}">{{ post.titulo }}</a>
-            </h2>
-            <p class="text-muted">Publicado em {{ post.data_criacao|date:"d/m/Y" }} por {{ post.autor }}</p>
-            <p class="card-text">{{ post.conteudo|truncatewords:30 }}</p>
-            {% if user.is_authenticated %}
-                <a href="{% url 'atualizar_post' post.slug %}" class="btn btn-warning btn-sm">Editar</a>
-                <a href="{% url 'deletar_post' post.slug %}" class="btn btn-danger btn-sm">Deletar</a>
-            {% endif %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ post.titulo }}</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #e5e6c9;
+            color: #333;
+            line-height: 1.6;
+            height: auto;
+            width: 100%;
+        }
+
+        .sobre_Cívika, .valores {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            color: #007bff;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .sobre_Cívika_details, .valores_details {
+            font-size: 1.2rem;
+            color: #555;
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 2rem auto;
+            line-height: 1.8;
+        }
+
+        .div_valores {
+            background-color: #bdcdd0;
+            width: 100%;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 200px;
+            text-align: center;
+        }
+
+        .valores-list {
+            list-style-type: none;
+            padding: 0;
+            text-align: center;
+            margin: 0 auto 2rem auto;
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .valores-list li {
+            font-size: 1.1rem;
+            color: #333;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .valores-list li:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .last_posts {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            color: #dc3545;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .sobre_Cívika img {
+            display: block;
+            margin: 0 auto 1rem auto;
+            border-radius: 50%;
+            width: 150px;
+            height: 150px;
+        }
+
+        .sobre_Cívika p {
+            font-size: 1.2rem;
+            color: #555;
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 2rem auto;
+            line-height: 1.8;
+        }
+
+        .equipe {
+            background-color: #f8f9fa;
+            padding: 2rem 0;
+            text-align: center;
+        }
+
+        .equipe h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            color: #28a745;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .equipe_details {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .equipe_details img {
+            display: block;
+            margin: 0 auto 1rem auto;
+            border-radius: 50%;
+            width: 150px;
+            height: 150px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .equipe_details img:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .equipe_details p {
+            font-size: 1.2rem;
+            color: #555;
+            max-width: 800px;
+            margin: 0 auto 2rem auto;
+            line-height: 1.8;
+        }
+
+        .equipe_details p span {
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .card {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-bottom: 1.5rem;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.75rem;
+            margin-bottom: 1rem;
+            color: #007bff;
+        }
+
+        .card-title a {
+            text-decoration: none;
+            color: inherit;
+            transition: color 0.3s ease;
+        }
+
+        .card-title a:hover {
+            color: #0056b3;
+        }
+
+        .text-muted {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-bottom: 1rem;
+        }
+
+        .card-text {
+            font-size: 1rem;
+            color: #555;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn {
+            font-size: 0.875rem;
+            padding: 0.375rem 0.75rem;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .btn-warning {
+            background-color: #ffc107;
+            border-color: #ffc107;
+            color: #000;
+        }
+
+        .btn-warning:hover {
+            background-color: #e0a800;
+            border-color: #d39e00;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            color: #fff;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+            border-color: #bd2130;
+        }
+
+        .btn-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+        }
+
+        .btn + .btn {
+            margin-left: 0.5rem;
+        }
+
+        footer {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 1rem 0;
+            margin-top: 2rem;
+        }
+
+        footer a {
+            color: #ffc107;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Seção Sobre o Cívika -->
+    <h1 class='sobre_Cívika'>Sobre o Cívika</h1>
+    <p class='sobre_Cívika_details'>
+        O Cívika é um blog de tecnologia que tem como objetivo compartilhar conhecimento sobre programação, desenvolvimento web e outras áreas relacionadas à tecnologia.
+    </p>
+
+    <!-- Seção Valores -->
+    <section class="div_valores">
+        <h2 class='valores'>Valores</h2>
+        <ul class="valores-list">
+            <li>Política com Base em Dados</li>
+            <li>Consultoria Especializada</li>
+            <li>Desenvolvimento de Aplicações em Dados</li>
+        </ul>
+    </section>
+
+    <!-- Seção Últimos Posts -->
+    <h2 class='last_posts'>Últimos Posts</h2>
+    {% for post in posts %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <h2 class="card-title">
+                    <a href="{% url 'detalhe_post' post.slug %}">{{ post.titulo }}</a>
+                </h2>
+                <p class="text-muted">Publicado em {{ post.data_criacao|date:"d/m/Y H:i" }} por {{ post.autor }}</p>
+                <p class="card-text">{{ post.conteudo|truncatewords:30 }}</p>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'atualizar_post' post.slug %}" class="btn btn-warning btn-sm">Editar</a>
+                    <a href="{% url 'deletar_post' post.slug %}" class="btn btn-danger btn-sm">Deletar</a>
+                {% endif %}
+            </div>
         </div>
-    </div>
-{% endfor %}
+    {% endfor %}
+
+    <!-- Seção Equipe -->
+    <section class="equipe">
+        <h2>Equipe Cívika.cc</h2>
+        <div class="equipe_details">
+            <img src="{% static 'static/images/chris.jpg' %}" alt="Foto de Christian Basilio">
+            <p>Christian Basilio, Gestor Público e Cientista de Dados</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 Cívika.cc Todos os direitos reservados.</p>
+        <p>
+            <a href="#">Política de Privacidade</a> |
+            <a href="#">Termos de Uso</a>
+        </p>
+    </footer>
+</body>
 {% endblock %}
+</html>
